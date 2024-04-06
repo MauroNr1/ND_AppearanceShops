@@ -72,7 +72,11 @@ local function startChange(coords, options, i)
         if not appearance then return end
 
         ped = PlayerPedId()
-        local clothing = fivemAppearance:getPedAppearance(ped)
+        local clothing = {
+            model = GetEntityModel(ped),
+            tattoos = exports["fivem-appearance"]:getPedTattoos(ped),
+            appearance = exports["fivem-appearance"]:getPedAppearance(ped)
+        }
 
         if not lib.callback.await("ND_AppearanceShops:clothingPurchase", false, i, clothing) then
             fivemAppearance:setPlayerModel(oldAppearance.model)
@@ -154,8 +158,16 @@ lib.registerContext({
                         type = "error"
                     })
                 end
+
                 fivemAppearance:setPedAppearance(cache.ped, selected.appearance)
-                TriggerServerEvent("ND_AppearanceShops:updateAppearance", fivemAppearance:getPedAppearance(cache.ped))
+
+                local clothing = {
+                    model = GetEntityModel(cache.ped),
+                    tattoos = exports["fivem-appearance"]:getPedTattoos(cache.ped),
+                    appearance = exports["fivem-appearance"]:getPedAppearance(cache.ped)
+                }
+
+                TriggerServerEvent("ND_AppearanceShops:updateAppearance", clothing)
             end
         },
         {
